@@ -1,0 +1,13 @@
+@keyframes animations {
+    0% {
+        transform: translateY(-10px);
+        opacity: 0;
+    }
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+.container-pages {
+    animation: alternate ease-in-out 0.4s animations;
+}
