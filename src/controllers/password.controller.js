@@ -58,7 +58,24 @@ module.exports = {
             const passes = await Password.find({ owner_name: username });
 
             return res.status(200).json({ passwords: passes });
-        } catch (error) {}
+        } catch (error) {
+            return res.status(500).json({ error: error.message });
+        }
+    },
+
+    async readById(req, res) {
+        const { id } = req.params;
+
+        if (!id) {
+            return res.status(400).json({ error: "Missing id!" });
+        }
+        try {
+            const pass = await Password.findOne({ _id: id });
+
+            return res.status(200).json({ password: pass });
+        } catch (error) {
+            return res.status(500).json({ error: error.message });
+        }
     },
 
     async update(req, res) {
@@ -66,7 +83,7 @@ module.exports = {
             const updates = {};
             if (req.body.from) updates.from = req.body.from;
             if (req.body.pass) updates.pass = req.body.pass;
-            
+
             if (req.body.owner_name) {
                 const user = await User.findOne({ name: req.body.owner_name });
                 if (!user) {
@@ -77,7 +94,7 @@ module.exports = {
 
             Object.assign(req.password, updates);
             await req.password.save();
-            
+
             return res.json({ message: "Password updated successfully" });
         } catch (error) {
             return res.status(500).json({ error: error.message });

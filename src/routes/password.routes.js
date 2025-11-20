@@ -6,6 +6,11 @@ const PasswordMiddleware = require("../middlewares/password.middleware");
 
 router.get("/api/allpasswords", PasswordsController.index);
 router.get("/api/passwords", PasswordsController.read);
+router.get(
+    "/api/password/:id",
+    PasswordMiddleware.validateId,
+    PasswordsController.readById
+);
 
 router.post("/api/password", PasswordsController.create);
 
