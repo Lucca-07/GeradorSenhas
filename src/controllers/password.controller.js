@@ -44,17 +44,13 @@ module.exports = {
     },
 
     async read(req, res) {
-        const { _id } = req.body;
+        const { id } = req.params;
 
-        if (!_id) {
-            return res.status(400).json({ error: "Missing _id!" });
+        if (!id) {
+            return res.status(400).json({ error: "Missing id!" });
         }
         try {
-            const user = await User.findOne({ _id: _id });
-            if (!user) {
-                return res.status(404).json({ error: "User not found" });
-            }
-            const username = user.name;
+            const username = req.user.name;
             const passes = await Password.find({ owner_name: username });
 
             return res.status(200).json({ passwords: passes });
@@ -103,10 +99,10 @@ module.exports = {
 
     async delete(req, res) {
         try {
-            await req.user.deleteOne();
+            await req.password.deleteOne();
             return res
                 .status(200)
-                .json({ message: "User deleted successfully." });
+                .json({ message: "Password deleted successfully." });
         } catch (error) {
             return res.status(500).json({ error: error.message });
         }

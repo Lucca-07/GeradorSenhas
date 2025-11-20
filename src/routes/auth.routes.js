@@ -5,7 +5,7 @@ const UserController = require("../controllers/auth.controller");
 const UserMiddleware = require("../middlewares/auth.middleware");
 
 router.get("/api/allusers", UserController.index);
-router.get("/api/user", UserController.read);
+router.get("/api/user/:id", UserMiddleware.validateId , UserController.read);
 
 router.post("/api/user", UserController.create);
 

@@ -3,9 +3,11 @@ const router = express.Router();
 
 const PasswordsController = require("../controllers/password.controller");
 const PasswordMiddleware = require("../middlewares/password.middleware");
+const UserMiddleware = require("../middlewares/auth.middleware");
+
 
 router.get("/api/allpasswords", PasswordsController.index);
-router.get("/api/passwords", PasswordsController.read);
+router.get("/api/passwords/:id", UserMiddleware.validateId, PasswordsController.read);
 router.get(
     "/api/password/:id",
     PasswordMiddleware.validateId,
