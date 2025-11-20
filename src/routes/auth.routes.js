@@ -4,12 +4,12 @@ const router = express.Router();
 const UserController = require("../controllers/auth.controller");
 
 router.get("/api/allusers", UserController.index);
-router.get("/api/users", UserController.read);
+router.get("/api/user", UserController.read);
 
-router.post("/api/users", UserController.create);
+router.post("/api/user", UserController.create);
 
-router.put("/api/users", UserController.update);
+router.put("/api/user", UserController.update);
 
-router.delete("/api/users", UserController.delete);
+router.delete("/api/user", UserController.delete);
 
 module.exports = router;

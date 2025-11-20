@@ -12,14 +12,17 @@ module.exports = {
     },
 
     async create(req, res) {
-        const { login, pass } = req.body;
+        const { name, login, pass } = req.body;
 
-        if (!login || !pass) {
-            return res.status(400).json({ error: "Missing login or pass!" });
+        if (!name || !login || !pass) {
+            return res
+                .status(400)
+                .json({ error: "Missing name, login or pass!" });
         }
 
         const user = new User({
             _id: uuid(),
+            name: name,
             login: login,
             pass: pass,
         });
@@ -51,19 +54,19 @@ module.exports = {
     },
 
     async update(req, res) {
-        const { login, newlogin, newpass } = req.body;
-        if (!login) {
-            return res.status(400).json({ error: "Missing login!" });
+        const { _id, newname, newlogin, newpass } = req.body;
+        if (!_id) {
+            return res.status(400).json({ error: "Missing id!" });
         }
-        if (!newlogin || !newpass) {
+        if (!newlogin || !newpass || !newname) {
             return res
                 .status(400)
-                .json({ error: "Missing new login or new pass!" });
+                .json({ error: "Missing new name, new login or new pass!" });
         }
         try {
             const updated = await User.findOneAndUpdate(
-                { login },
-                { login: newlogin, pass: newpass },
+                { _id },
+                { name: newname, login: newlogin, pass: newpass },
                 { new: true }
             );
             if (!updated) {
