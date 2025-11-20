@@ -9,8 +9,8 @@ router.get("/api/user/:id", UserMiddleware.validateId, UserController.read);
 
 router.post(
     "/api/user",
-    UserMiddleware.validateLoginExists,
     UserMiddleware.validateCreate,
+    UserMiddleware.validateLoginExists,
     UserController.create
 );
 

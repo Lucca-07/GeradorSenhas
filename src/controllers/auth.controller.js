@@ -35,13 +35,11 @@ module.exports = {
     },
 
     async update(req, res) {
+        const { login, pass, name } = req.body;
         try {
-            const updates = {};
-            if (req.body.name) updates.name = req.body.name;
-            if (req.body.login) updates.login = req.body.login;
-            if (req.body.pass) updates.pass = req.body.pass;
-
-            Object.assign(req.user, updates);
+            req.user.login = login;
+            req.user.pass = pass;
+            req.user.name = name;
             await req.user.save();
 
             return res.json({ message: "User updated successfully" });

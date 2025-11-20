@@ -13,26 +13,6 @@ module.exports = {
     },
 
     async create(req, res) {
-        const { owner_name, from, pass } = req.body;
-
-        if (!owner_name || !from || !pass) {
-            return res
-                .status(400)
-                .json({ error: "Missing owner_name or from or pass!" });
-        }
-
-        const user = await User.findOne({ name: owner_name });
-        if (!user) {
-            return res
-                .status(400)
-                .json({ error: "This user does not exists!" });
-        }
-        const password = new Password({
-            _id: uuid(),
-            owner_name,
-            from,
-            pass,
-        });
         try {
             await password.save();
             return res
@@ -43,12 +23,7 @@ module.exports = {
         }
     },
 
-    async read(req, res) {
-        const { id } = req.params;
-
-        if (!id) {
-            return res.status(400).json({ error: "Missing id!" });
-        }
+    async readByUser(req, res) {
         try {
             const username = req.user.name;
             const passes = await Password.find({ owner_name: username });
@@ -60,12 +35,8 @@ module.exports = {
     },
 
     async readById(req, res) {
-        const { id } = req.params;
-
-        if (!id) {
-            return res.status(400).json({ error: "Missing id!" });
-        }
         try {
+            const id = req.password._id;
             const pass = await Password.findOne({ _id: id });
 
             return res.status(200).json({ password: pass });
@@ -75,20 +46,11 @@ module.exports = {
     },
 
     async update(req, res) {
+        const { owner_name, from, pass } = req.body;
         try {
-            const updates = {};
-            if (req.body.from) updates.from = req.body.from;
-            if (req.body.pass) updates.pass = req.body.pass;
-
-            if (req.body.owner_name) {
-                const user = await User.findOne({ name: req.body.owner_name });
-                if (!user) {
-                    return res.status(404).json({ error: "Owner not found" });
-                }
-                updates.owner_name = user.name;
-            }
-
-            Object.assign(req.password, updates);
+            req.password.owner_name = owner_name;
+            req.password.from = from;
+            req.password.pass = pass;
             await req.password.save();
 
             return res.json({ message: "Password updated successfully" });

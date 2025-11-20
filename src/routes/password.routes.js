@@ -5,16 +5,24 @@ const PasswordsController = require("../controllers/password.controller");
 const PasswordMiddleware = require("../middlewares/password.middleware");
 const UserMiddleware = require("../middlewares/auth.middleware");
 
-
 router.get("/api/allpasswords", PasswordsController.index);
-router.get("/api/passwords/:id", UserMiddleware.validateId, PasswordsController.read);
 router.get(
-    "/api/password/:id",
+    "/api/passwords/user/:id",
+    UserMiddleware.validateId,
+    PasswordsController.readByUser
+);
+router.get(
+    "/api/password/pass/:id",
     PasswordMiddleware.validateId,
     PasswordsController.readById
 );
 
-router.post("/api/password", PasswordsController.create);
+router.post(
+    "/api/password",
+    PasswordMiddleware.validateCreate,
+    PasswordMiddleware.validatePasswordFrom,
+    PasswordsController.create
+);
 
 router.put(
     "/api/password/:id",
