@@ -2,14 +2,23 @@ const express = require("express");
 const router = express.Router();
 
 const UserController = require("../controllers/auth.controller");
+const UserMiddleware = require("../middlewares/auth.middleware");
 
 router.get("/api/allusers", UserController.index);
 router.get("/api/user", UserController.read);
 
 router.post("/api/user", UserController.create);
 
-router.put("/api/user", UserController.update);
+router.put(
+    "/api/user/:id",
+    UserMiddleware.validateId,
+    UserController.update
+);
 
-router.delete("/api/user", UserController.delete);
+router.delete(
+    "/api/user/:id",
+    UserMiddleware.validateId,
+    UserController.delete
+);
 
 module.exports = router;

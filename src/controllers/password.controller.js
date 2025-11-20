@@ -11,7 +11,7 @@ module.exports = {
             res.status(500).json({ error: error.message });
         }
     },
-    
+
     async create(req, res) {
         const { owner_name, from, pass } = req.body;
 
@@ -44,13 +44,13 @@ module.exports = {
     },
 
     async read(req, res) {
-        const { login } = req.body;
+        const { _id } = req.body;
 
-        if (!login) {
-            return res.status(400).json({ error: "Missing login!" });
+        if (!_id) {
+            return res.status(400).json({ error: "Missing _id!" });
         }
         try {
-            const user = await User.findOne({ login: login });
+            const user = await User.findOne({ _id: _id });
             if (!user) {
                 return res.status(404).json({ error: "User not found" });
             }
@@ -62,48 +62,34 @@ module.exports = {
     },
 
     async update(req, res) {
-        const { _id, newowner, newfrom, newpass } = req.body;
-        if (!_id) {
-            return res.status(400).json({ error: "Missing id!" });
-        }
-        if (!newowner || !newpass || !newfrom) {
-            return res
-                .status(400)
-                .json({ error: "Missing new owner, new from or new pass!" });
-        }
         try {
-            const updated = await Password.findOneAndUpdate(
-                { _id },
-                { owner_name: newowner, from: newfrom, pass: newpass },
-                { new: true }
-            );
-            if (!updated) {
-                return res.status(404).json({ error: "Password not found" });
+            const updates = {};
+            if (req.body.from) updates.from = req.body.from;
+            if (req.body.pass) updates.pass = req.body.pass;
+            
+            if (req.body.owner_name) {
+                const user = await User.findOne({ name: req.body.owner_name });
+                if (!user) {
+                    return res.status(404).json({ error: "Owner not found" });
+                }
+                updates.owner_name = user.name;
             }
-            return res
-                .status(200)
-                .json({ message: "Password updated successfully!" });
+
+            Object.assign(req.password, updates);
+            await req.password.save();
+            
+            return res.json({ message: "Password updated successfully" });
         } catch (error) {
             return res.status(500).json({ error: error.message });
         }
     },
 
     async delete(req, res) {
-        const { owner, from } = req.body;
-        if (!owner || !from) {
-            return res.status(400).json({ error: "Missing owner or from!" });
-        }
         try {
-            const deleted = await Password.deleteOne({
-                owner_name: owner,
-                from: from,
-            });
-            if (deleted.deletedCount === 0) {
-                return res.status(404).json({ error: "Password not found" });
-            }
+            await req.user.deleteOne();
             return res
                 .status(200)
-                .json({ message: "Password deleted successfully!" });
+                .json({ message: "User deleted successfully." });
         } catch (error) {
             return res.status(500).json({ error: error.message });
         }

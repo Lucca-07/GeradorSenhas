@@ -1,5 +1,5 @@
 const { validate: isUuid } = require("uuid");
-const User = require("../models/user.model");
+const Password = require("../models/password.model");
 
 module.exports = {
     async validateId(req, res, next) {
@@ -10,11 +10,11 @@ module.exports = {
         }
 
         try {
-            const user = await User.findById(id);
-            if (!user) {
-                return res.status(404).json({ error: "User not found." });
+            const password = await Password.findById(id);
+            if (!password) {
+                return res.status(404).json({ error: "Password not found." });
             }
-            req.user = user;
+            req.password = password;
             next();
         } catch (error) {
             return res.status(500).json({ error: error.message });

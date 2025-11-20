@@ -38,12 +38,12 @@ module.exports = {
     },
 
     async read(req, res) {
-        const { login } = req.body;
-        if (!login) {
-            return res.status(400).json({ error: "Missing login!" });
+        const { _id } = req.body;
+        if (!_id) {
+            return res.status(400).json({ error: "Missing _id!" });
         }
         try {
-            const user = await User.findOne({ login });
+            const user = await User.findOne({ _id });
             if (!user) {
                 return res.status(404).json({ error: "User not found" });
             }
@@ -54,45 +54,27 @@ module.exports = {
     },
 
     async update(req, res) {
-        const { _id, newname, newlogin, newpass } = req.body;
-        if (!_id) {
-            return res.status(400).json({ error: "Missing id!" });
-        }
-        if (!newlogin || !newpass || !newname) {
-            return res
-                .status(400)
-                .json({ error: "Missing new name, new login or new pass!" });
-        }
         try {
-            const updated = await User.findOneAndUpdate(
-                { _id },
-                { name: newname, login: newlogin, pass: newpass },
-                { new: true }
-            );
-            if (!updated) {
-                return res.status(404).json({ error: "User not found" });
-            }
-            return res
-                .status(200)
-                .json({ message: "User updated successfully!" });
+            const updates = {};
+            if (req.body.name) updates.name = req.body.name;
+            if (req.body.login) updates.login = req.body.login;
+            if (req.body.pass) updates.pass = req.body.pass;
+
+            Object.assign(req.user, updates);
+            await req.user.save();
+
+            return res.json({ message: "User updated successfully" });
         } catch (error) {
             return res.status(500).json({ error: error.message });
         }
     },
 
     async delete(req, res) {
-        const { login } = req.body;
-        if (!login) {
-            return res.status(400).json({ error: "Missing login!" });
-        }
         try {
-            const deleted = await User.deleteOne({ login });
-            if (deleted.deletedCount === 0) {
-                return res.status(404).json({ error: "User not found" });
-            }
+            await req.user.deleteOne();
             return res
                 .status(200)
-                .json({ message: "User deleted successfully!" });
+                .json({ message: "User deleted successfully." });
         } catch (error) {
             return res.status(500).json({ error: error.message });
         }
