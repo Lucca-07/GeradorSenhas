@@ -1,39 +1,46 @@
 const express = require("express");
 const router = express.Router();
 
-const PasswordsController = require("../controllers/password.controller");
+const PasswordController = require("../controllers/password.controller");
 const PasswordMiddleware = require("../middlewares/password.middleware");
 const UserMiddleware = require("../middlewares/auth.middleware");
 
-router.get("/api/allpasswords", PasswordsController.index);
+router.get("/api/allpasswords", PasswordController.index);
 router.get(
     "/api/passwords/user/:id",
     UserMiddleware.validateId,
-    PasswordsController.readByUser
+    PasswordController.readByUser
 );
 router.get(
     "/api/password/pass/:id",
     PasswordMiddleware.validateId,
-    PasswordsController.readById
+    PasswordController.readById
 );
 
 router.post(
     "/api/password",
     PasswordMiddleware.validateCreate,
     PasswordMiddleware.validatePasswordFrom,
-    PasswordsController.create
+    PasswordController.create
+);
+
+router.post(
+    "/api/password/generate",
+    PasswordMiddleware.validatePasswordFrom,
+    PasswordMiddleware.validateGenerate,
+    PasswordController.createAndSave
 );
 
 router.put(
     "/api/password/:id",
     PasswordMiddleware.validateId,
-    PasswordsController.update
+    PasswordController.update
 );
 
 router.delete(
     "/api/password/:id",
     PasswordMiddleware.validateId,
-    PasswordsController.delete
+    PasswordController.delete
 );
 
 module.exports = router;

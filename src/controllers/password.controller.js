@@ -14,12 +14,12 @@ module.exports = {
 
     async create(req, res) {
         try {
-            await password.save();
+            await req.password.save();
             return res
                 .status(201)
-                .json({ message: "Password created succesfully!" });
+                .json({ message: "Password created successfully!" });
         } catch (error) {
-            res.status(400).json({ error: error.message });
+            return res.status(400).json({ error: error.message });
         }
     },
 
@@ -67,6 +67,18 @@ module.exports = {
                 .json({ message: "Password deleted successfully." });
         } catch (error) {
             return res.status(500).json({ error: error.message });
+        }
+    },
+
+    async createAndSave(req, res) {
+        try {
+            await req.password.save();
+            return res.status(201).json({
+                message: "Password generated and saved!",
+                password: req.generatedPassword,
+            });
+        } catch (error) {
+            return res.status(400).json({ error: error.message });
         }
     },
 };
