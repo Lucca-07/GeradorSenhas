@@ -12,23 +12,8 @@ module.exports = {
     },
 
     async create(req, res) {
-        const { name, login, pass } = req.body;
-
-        if (!name || !login || !pass) {
-            return res
-                .status(400)
-                .json({ error: "Missing name, login or pass!" });
-        }
-
-        const user = new User({
-            _id: uuid(),
-            name: name,
-            login: login,
-            pass: pass,
-        });
-
         try {
-            await user.save();
+            await req.user.save();
             return res
                 .status(201)
                 .json({ message: "User created succesfully!" });
@@ -43,7 +28,6 @@ module.exports = {
             return res.status(400).json({ error: "Missing id!" });
         }
         try {
-            
             return res.status(200).json({ user: req.user });
         } catch (error) {
             return res.status(500).json({ error: error.message });
