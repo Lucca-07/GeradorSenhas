@@ -8,9 +8,10 @@ function loadLoginPage() {
     }
 
     clearPage(true);
-    if (!document.querySelector(".container")) {
+    if (!document.querySelector(".container-pages")) {
         const c = document.createElement("div");
-        c.className = "container container-pages";
+        c.className =
+            "container container-pages h-100 d-flex flex-column justify-content-center";
         document.body.appendChild(c);
     }
 
@@ -35,37 +36,16 @@ function loadLoginPage() {
         </div>`;
 }
 
-async function login() {
-    const URLcompleta = `${protocol}${baseURL}/auth/login`;
-    const login = document.querySelector("#loginInput").value.trim();
-    const pass = document.querySelector("#passwordInput").value;
-
-    if (!login || !pass) return;
-
-    try {
-        const { data } = await axios.post(URLcompleta, { login, pass });
-        const token = data?.token || data; // Ajuste conforme resposta real
-        if (token) {
-            localStorage.setItem("token", token);
-        }
-        loadInitPage();
-    } catch (error) {
-        const serverMessage =
-            error.response?.data?.error ||
-            error.response?.data?.message ||
-            "Falha ao realizar login.";
-        alert(`Erro (${error.response?.status || "?"}): ${serverMessage}`);
-    }
-}
-
 function loadInitPage() {
-    clearPage(); // NÃO usar clearPage(true)
-    // Cria container se não existir (ex: após login)
+    clearPage();
+    loadSideBar();
     let container = document.querySelector(".container");
     if (!container) {
         container = document.createElement("div");
-        container.className = "container container-pages";
+        container.className =
+            "container container-pages h-100 d-flex flex-column justify-content-center";
         document.body.appendChild(container);
+        loadSideBar();
     }
 
     const page = `
@@ -103,35 +83,70 @@ function loadInitPage() {
     container.innerHTML = page;
 }
 
-async function loadPasswords() {
-    const loadPasswordsEndpoint =
-        "/api/passwords/user/ebaf2813-66d9-43b5-909d-fdac134cc225";
-    const URLcompleta = `${protocol}${baseURL}${loadPasswordsEndpoint}`;
-    try {
-        const response = await axios.get(URLcompleta);
-        const passes = response.data.passwords;
-        return Array.isArray(passes) ? passes : [];
-    } catch (error) {
-        console.error(error);
-        return [];
+function loadSideBar() {
+    let existing = document.querySelector(".navbar-container");
+    if (existing) {
+        existing.classList.remove("d-none");
+        return;
     }
+    const sidebar = `<div class="position-fixed navbar-container" id="navbar-container" style="top:0;left:0;z-index:1050;">
+        <button class="btn btn-primary m-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarNav"
+            aria-controls="sidebarNav">
+            <i class="bi bi-list"></i> Menu
+        </button>
+        <nav>
+            <div class="offcanvas offcanvas-start" tabindex="-1" id="sidebarNav" data-bs-keyboard="false"
+                data-bs-backdrop="false" aria-labelledby="sidebarTitle">
+                <div class="offcanvas-header">
+                    <h6 class="offcanvas-title" id="sidebarTitle">Gerador de Senhas</h6>
+                    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"
+                        aria-label="Close" id="btn-close-sidebar"></button>
+                </div>
+                <div class="offcanvas-body px-0">
+                    <ul class="nav nav-pills flex-column mb-0 align-items-start" id="menu">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link text-truncate" onclick="loadInitPage();document.getElementById('btn-close-sidebar').click()">
+                                <i class="fs-5 bi-house"></i><span class="ms-1 d-sm-inline">Inicio</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="nav-link text-truncate" onclick="loadAllPasswordPage();document.getElementById('btn-close-sidebar').click()">
+                                <i class="fs-5 bi-key"></i><span class="ms-1 d-sm-inline">Todas minhas senhas</span>
+                            </a>
+                        </li>
+                        <li class="dropend">
+                            <a href="#" class="nav-link dropdown-toggle text-truncate" id="dropdown"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fs-5 bi-person"></i><span class="ms-1 d-sm-inline">Minha conta</span>
+                            </a>
+                            <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdown">
+                                <li><a class="dropdown-item" href="#">Visualizar</a></li>
+                                <li><a class="dropdown-item" href="#">Editar</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="#" onclick="logout()">Sair</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </div>`;
+    document.body.insertAdjacentHTML("beforeend", sidebar);
 }
 
 async function loadAllPasswordPage() {
     const passes = await loadPasswords();
+    clearPage();
+    loadSideBar();
 
-    // Não apagar o body (mantém sidebar)
-    clearPage(); // antes: clearPage(true)
-
-    // Garante container
     let container = document.querySelector(".container");
     if (!container) {
         container = document.createElement("div");
-        container.className = "container container-pages";
+        container.className =
+            "container container-pages h-100 d-flex flex-column justify-content-center";
         document.body.appendChild(container);
     }
 
-    // Se a sidebar não existir (caso tenha sido limpa em outra transição), recria
     if (!document.querySelector(".navbar-container")) {
         loadSideBar();
     }
@@ -191,11 +206,58 @@ function clearPage(all = false) {
         container.classList.add("container-pages");
     }
     if (all) {
-        // Em vez de apagar tudo, garante estrutura mínima
         document.body.innerHTML = "";
         const c = document.createElement("div");
-        c.className = "container container-pages";
+        c.className =
+            "container container-pages h-100 d-flex flex-column justify-content-center";
         document.body.appendChild(c);
+    }
+}
+
+async function login() {
+    const URLcompleta = `${protocol}${baseURL}/auth/login`;
+    const login = document.querySelector("#loginInput").value.trim();
+    const pass = document.querySelector("#passwordInput").value;
+
+    if (!login || !pass) return;
+
+    try {
+        const { data } = await axios.post(URLcompleta, { login, pass });
+        const token = data.token;
+        if (token) {
+            localStorage.setItem("token", token);
+        }
+        const user = data.user;
+        if (user) {
+            localStorage.setItem("_id", user._id);
+            localStorage.setItem("name", user.name);
+        }
+        loadInitPage();
+    } catch (error) {
+        alert("Erro ao realizar login!");
+        console.error(error);
+    }
+}
+
+function logout() {
+    ["token", "_id", "name"].forEach((item) => {
+        localStorage.removeItem(item);
+    });
+    loadLoginPage();
+}
+
+async function loadPasswords() {
+    const loadPasswordsEndpoint = `/api/passwords/user/${localStorage.getItem(
+        "_id"
+    )}`;
+    const URLcompleta = `${protocol}${baseURL}${loadPasswordsEndpoint}`;
+    try {
+        const response = await axios.get(URLcompleta);
+        const passes = response.data.passwords;
+        return Array.isArray(passes) ? passes : [];
+    } catch (error) {
+        console.error(error);
+        return [];
     }
 }
 
@@ -216,7 +278,7 @@ async function createAndSavePassword() {
     }
 
     const dataToSend = {
-        owner_name: "ADMIN",
+        owner_name: localStorage.getItem("name"),
         from: fromPassword,
         length: sizePassword,
         uppercase: includeUpperCase,
@@ -257,61 +319,4 @@ function showCard(selector, text, classesToAdd, classesToRemove, timer) {
         card.classList.remove(...classesToAdd);
         card.classList.add(...classesToRemove);
     }, timer);
-}
-
-function loadSideBar() {
-    const sidebar = `<div class="position-absolute navbar-container">
-        <button class="btn btn-primary m-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarNav"
-            aria-controls="sidebarNav">
-            <i class="bi bi-list"></i> Menu
-        </button>
-
-        <nav>
-            <div class="offcanvas offcanvas-start" tabindex="-1" id="sidebarNav" data-bs-keyboard="false"
-                data-bs-backdrop="false" aria-labelledby="sidebarTitle">
-                <div class="offcanvas-header">
-                    <h6 class="offcanvas-title" id="sidebarTitle">Gerador de Senhas</h6>
-                    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"
-                        aria-label="Close"></button>
-                </div>
-                <div class="offcanvas-body px-0">
-                    <ul class="nav nav-pills flex-column mb-0 align-items-start" id="menu">
-                        <li class="nav-item">
-                            <a href="#" class="nav-link text-truncate" onclick="loadInitPage()">
-                                <i class="fs-5 bi-house"></i><span class="ms-1 d-sm-inline">Inicio</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" data-bs-toggle="collapse" class="nav-link text-truncate"
-                                onclick="loadAllPasswordPage()">
-                                <i class="fs-5 bi-key"></i><span class="ms-1 d-sm-inline">Todas minhas
-                                    senhas</span>
-                            </a>
-                        </li>
-                        <li class="dropend">
-                            <a href="#" class="nav-link dropdown-toggle text-truncate" id="dropdown"
-                                data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fs-5 bi-person"></i><span class="ms-1 d-sm-inline">Minha conta</span>
-                            </a>
-                            <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdown">
-                                <li>
-                                    <a class="dropdown-item" href="#">Visualizar</a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" href="#">Editar</a>
-                                </li>
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" href="#">Sair</a>
-                                </li>
-                            </ul>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-    </div>`;
-    document.body.innerHTML += sidebar;
 }

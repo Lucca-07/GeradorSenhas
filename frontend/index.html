@@ -13,70 +13,11 @@
 
     <title>Gerador de Senhas</title>
 </head>
-<!-- loadInitPage() -->
 
-<body onload="loadLoginPage()" style="height: 100vh;">
-    <!-- NAVBAR CONTENT -->
-    <div class="position-absolute navbar-container">
-        <button class="btn btn-primary m-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarNav"
-            aria-controls="sidebarNav">
-            <i class="bi bi-list"></i> Menu
-        </button>
-
-        <nav>
-            <div class="offcanvas offcanvas-start" tabindex="-1" id="sidebarNav" data-bs-keyboard="false"
-                data-bs-backdrop="false" aria-labelledby="sidebarTitle">
-                <div class="offcanvas-header">
-                    <h6 class="offcanvas-title" id="sidebarTitle">Gerador de Senhas</h6>
-                    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"
-                        id="closeside"></button>
-                </div>
-                <div class="offcanvas-body px-0">
-                    <ul class="nav nav-pills flex-column mb-0 align-items-start" id="menu">
-                        <li class="nav-item">
-                            <a href="#" class="nav-link text-truncate" onclick="loadInitPage(); closeside.click()">
-                                <i class="fs-5 bi-house"></i><span class="ms-1 d-sm-inline">Inicio</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" data-bs-toggle="collapse" class="nav-link text-truncate"
-                                onclick="loadAllPasswordPage(); closeside.click()">
-                                <i class="fs-5 bi-key"></i><span class="ms-1 d-sm-inline">Todas minhas
-                                    senhas</span>
-                            </a>
-                        </li>
-                        <li class="dropend">
-                            <a href="#" class="nav-link dropdown-toggle text-truncate" id="dropdown"
-                                data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fs-5 bi-person"></i><span class="ms-1 d-sm-inline">Minha conta</span>
-                            </a>
-                            <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdown">
-                                <li>
-                                    <a class="dropdown-item" href="#">Visualizar</a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" href="#">Editar</a>
-                                </li>
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" href="#">Sair</a>
-                                </li>
-                            </ul>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-    </div>
-
-
-    <div class="container h-100 d-flex flex-column justify-content-center container-pages">
-    </div>
+<body onload="loadLoginPage()" class="align-content-center" style="height: 100vh;">
 
     <!-- MEU JS -->
-    <script src="./js/script.js"></script>
+    <script src="./js/main.js"></script>
     <!-- BOOTSTRAP -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"

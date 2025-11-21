@@ -13,7 +13,7 @@ router.post(
     UserMiddleware.validateLoginExists,
     UserController.create
 );
-router.post("/auth/login", UserController.login);
+router.post("/auth/login", UserMiddleware.valideteLogin, UserController.login);
 
 router.put(
     "/api/user/:id",
